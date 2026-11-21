@@ -228,6 +228,19 @@ skills:
         min_band: narrow
         source: authored
 
+  plugin-snu_etl:
+    positives:
+      - text: "what homework is due this week"
+        channel: trigger
+        lang: en
+        min_band: narrow
+        source: authored
+      - text: "did i already turn in my assignment on etl"
+        channel: trigger
+        lang: en
+        min_band: narrow
+        source: authored
+
   plugin-supabase:
     positives:
       - text: "fuehr mir die migration auf der supabase datenbank aus"
