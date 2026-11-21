@@ -82,7 +82,8 @@ def test_format_due_is_seoul_time() -> None:
 
 def test_summary_uses_seoul_day_boundary() -> None:
     now = datetime(2026, 11, 22, 0, 0, tzinfo=UTC)  # Sun 11/22 09:00 KST
-    inside = parse_items([planner_item(1, due="2026-11-25T14:59:00Z", title="InWindow")])  # Wed 23:59 KST
+    # Wed 23:59 KST
+    inside = parse_items([planner_item(1, due="2026-11-25T14:59:00Z", title="InWindow")])
     outside = parse_items(
         [planner_item(2, due="2026-11-25T15:00:00Z", title="NextDay", subs={"submitted": True})]
     )  # Thu 00:00 KST
@@ -137,7 +138,7 @@ def test_summary_when_nothing() -> None:
     )
 
 
-def _getter(handler: Any, token: str = "tok") -> Any:
+def _getter(handler: Any, token: str = "tok") -> Any:  # noqa: S107 - fake token
     client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
 
     async def get(url: str, params: dict[str, Any] | None) -> httpx.Response:
@@ -153,7 +154,8 @@ async def test_fetch_planner_follows_next_links_and_caps_pages() -> None:
         seen.append(request)
         page = int(request.url.params.get("page", "1"))
         nxt = f"https://myetl.snu.ac.kr/api/v1/planner/items?page={page + 1}"
-        return httpx.Response(200, json=[planner_item(page)], headers={"Link": f'<{nxt}>; rel="next"'})
+        link = {"Link": f'<{nxt}>; rel="next"'}
+        return httpx.Response(200, json=[planner_item(page)], headers=link)
 
     start = datetime(2026, 11, 8, tzinfo=UTC)
     end = datetime(2027, 1, 21, tzinfo=UTC)
@@ -172,7 +174,7 @@ async def test_fetch_planner_error_hides_auth() -> None:
 
     with pytest.raises(EtlError) as exc:
         await fetch_planner(
-            _getter(handler, token="secret-tok"),
+            _getter(handler, token="secret-tok"),  # noqa: S106 - fake token
             datetime(2026, 11, 8, tzinfo=UTC),
             datetime(2026, 11, 30, tzinfo=UTC),
         )

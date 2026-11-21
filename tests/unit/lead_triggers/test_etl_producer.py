@@ -82,7 +82,10 @@ async def test_new_assignment_emits_event() -> None:
 
 async def test_removed_assignment_is_dropped_silently() -> None:
     cursor = {
-        "due": {"assignment:1": "2026-11-24T14:59:59+00:00", "assignment:9": "2026-11-25T00:00:00+00:00"},
+        "due": {
+            "assignment:1": "2026-11-24T14:59:59+00:00",
+            "assignment:9": "2026-11-25T00:00:00+00:00",
+        },
         "summary_day": TODAY,
     }
     poll = await _producer([planner_item(1)]).poll(cursor, NOW_9)

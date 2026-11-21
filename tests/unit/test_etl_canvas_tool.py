@@ -8,7 +8,6 @@ from __future__ import annotations
 import json
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
 from uuid import uuid4
 
 import httpx
@@ -28,7 +27,9 @@ def _ctx() -> ExecutionContext:
 
 PLANNER = [
     planner_item(1, due="2026-11-24T14:59:59Z", title="HW3"),
-    planner_item(2, due="2026-11-23T00:00:00Z", title="Quiz1", kind="quiz", subs={"submitted": True}),
+    planner_item(
+        2, due="2026-11-23T00:00:00Z", title="Quiz1", kind="quiz", subs={"submitted": True}
+    ),
     planner_item(3, due="2026-11-27T00:00:00Z", title="Essay"),
     planner_item(4, due="2026-11-18T00:00:00Z", title="Lab2", subs={"missing": True}),
 ]
@@ -46,11 +47,12 @@ class Fake:
         if request.url.path == "/api/v1/planner/items":
             return httpx.Response(200, json=PLANNER)
         if request.url.path == "/api/v1/courses":
-            return httpx.Response(200, json=[{"id": 1, "name": "Algorithms"}, {"id": 2, "name": "Korean History"}])
+            courses = [{"id": 1, "name": "Algorithms"}, {"id": 2, "name": "Korean History"}]
+            return httpx.Response(200, json=courses)
         return httpx.Response(404, json={})
 
 
-def _tool(fake: Fake, token: str | None = "tok") -> EtlCanvasTool:
+def _tool(fake: Fake, token: str | None = "tok") -> EtlCanvasTool:  # noqa: S107 - fake token
     return EtlCanvasTool(
         access_token_provider=lambda: token,
         transport=httpx.MockTransport(fake.handler),
@@ -98,7 +100,8 @@ async def test_tool_not_connected() -> None:
 
 
 async def test_tool_401_says_reconnect_without_token() -> None:
-    res = await _tool(Fake(status=401), token="secret-tok").execute({"action": "upcoming"}, _ctx())
+    tool = _tool(Fake(status=401), token="secret-tok")  # noqa: S106 - fake token
+    res = await tool.execute({"action": "upcoming"}, _ctx())
     assert not res.success
     assert "reconnect" in (res.error or "")
     assert "secret-tok" not in (res.error or "")
@@ -134,7 +137,7 @@ def test_catalog_card_is_pat_paste() -> None:
     assert card["display_name"] == "SNU eTL"
     assert card["auth"]["mode"] == "pat_paste"
     assert card["auth"]["validation_endpoint"] == "https://myetl.snu.ac.kr/api/v1/users/self"
-    assert card["auth"]["token_creation_url"] == "https://myetl.snu.ac.kr/profile/settings"
+    assert card["auth"]["token_creation_url"] == "https://myetl.snu.ac.kr/profile/settings"  # noqa: S105
     assert "mcp_server" not in card
 
 

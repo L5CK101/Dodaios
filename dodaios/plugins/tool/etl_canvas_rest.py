@@ -130,7 +130,9 @@ class EtlCanvasTool:
         )
         return parse_items(raw)
 
-    async def _run(self, action: str, args: dict[str, Any], headers: dict[str, str]) -> dict[str, Any]:
+    async def _run(
+        self, action: str, args: dict[str, Any], headers: dict[str, str]
+    ) -> dict[str, Any]:
         now = self._clock()
         if action == "courses":
             response = await self._getter(headers)(
@@ -139,14 +141,19 @@ class EtlCanvasTool:
             if response.status_code != 200:
                 raise EtlError(f"eTL: HTTP {response.status_code}")
             body = response.json()
-            names = [str(c.get("name") or "") for c in body if isinstance(c, dict) and c.get("name")]
+            names = [
+                str(c["name"]) for c in body if isinstance(c, dict) and c.get("name")
+            ]
             return {"courses": names, "text": "\n".join(names) or "No active courses on eTL."}
         items = await self._items(headers, now)
         if action == "summary":
             return {"items": [_view(i) for i in items], "text": summary_text(items, now)}
         if action == "unsubmitted":
             chosen = [i for i in items if not is_done(i.status)]
-            return {"items": [_view(i) for i in chosen], "text": _list_text(chosen, "Nothing left unsubmitted.")}
+            return {
+                "items": [_view(i) for i in chosen],
+                "text": _list_text(chosen, "Nothing left unsubmitted."),
+            }
         days = max(1, int(args.get("days") or 14))
         end = now + timedelta(days=days)
         chosen = [i for i in items if now <= i.due_at <= end]
@@ -171,5 +178,6 @@ class EtlCanvasTool:
         except EtlError as exc:
             return ToolResult(success=False, output=None, error=str(exc))
         except httpx.HTTPError as exc:
-            return ToolResult(success=False, output=None, error=f"eTL is unreachable ({type(exc).__name__})")
+            error = f"eTL is unreachable ({type(exc).__name__})"
+            return ToolResult(success=False, output=None, error=error)
         return ToolResult(success=True, output=out)

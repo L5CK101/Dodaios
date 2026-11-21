@@ -82,7 +82,8 @@ class EtlProducer:
             before = known.get(item.id)
             if before is None:
                 events.append(self._event(
-                    item, f"New on eTL: {item.course} — {item.title}, due {format_due(item.due_at)}",
+                    item,
+                    f"New on eTL: {item.course} — {item.title}, due {format_due(item.due_at)}",
                 ))
             elif before != stamp:
                 events.append(self._event(
