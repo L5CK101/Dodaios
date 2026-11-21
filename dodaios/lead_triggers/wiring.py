@@ -532,6 +532,7 @@ def get_runner() -> ProducerRunner | None:
         from .producers.agentmail import AgentMailProducer
         from .producers.base import Api
         from .producers.calendar import CalendarProducer
+        from .producers.etl import EtlProducer
         from .producers.github import GithubProducer
         from .producers.gmail import GmailProducer
 
@@ -542,6 +543,7 @@ def get_runner() -> ProducerRunner | None:
                 CalendarProducer(Api("google_calendar")),
                 GithubProducer(Api("github")),
                 AgentMailProducer(Api("agentmail"), _agent_address),
+                EtlProducer(Api("snu_etl")),
             ],
             settings=service.settings,
             submit=submit_event,

@@ -18,7 +18,7 @@ MAX_LIST: Final[int] = 200
 DEFAULT_RATE_PER_MINUTE: Final[int] = 30
 DEFAULT_DEDUPE_WINDOW_S: Final[int] = 600
 #: The pollers that feed the intake, by the plugin whose connection they read with.
-PRODUCERS: Final[tuple[str, ...]] = ("gmail", "google_calendar", "github", "agentmail")
+PRODUCERS: Final[tuple[str, ...]] = ("gmail", "google_calendar", "github", "agentmail", "snu_etl")
 DEFAULT_POLL_INTERVAL_S: Final[int] = 180
 MIN_POLL_INTERVAL_S: Final[int] = 60
 MAX_POLL_INTERVAL_S: Final[int] = 3600
