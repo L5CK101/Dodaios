@@ -40,6 +40,7 @@ _PLUGIN_PAIRED_SKILLS: tuple[str, ...] = (
     "plugin-google_calendar",
     "plugin-google_drive",
     "plugin-vercel",
+    "plugin-snu_etl",
     "plugin-todoist",
     "plugin-clickup",
     "plugin-dropbox",

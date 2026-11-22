@@ -15,7 +15,7 @@ from collections.abc import Mapping
 from dataclasses import asdict, dataclass, field
 from typing import Any, Final
 
-SOURCES: Final[tuple[str, ...]] = ("mail", "calendar", "github", "automation", "channel")
+SOURCES: Final[tuple[str, ...]] = ("mail", "calendar", "github", "automation", "channel", "etl")
 #: Mail that arrived at the lead's own address carries ``agent:<address>`` as its scope.
 AGENT_SCOPE_PREFIX: Final[str] = "agent:"
 _MAX_SUMMARY: Final[int] = 300

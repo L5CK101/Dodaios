@@ -1131,6 +1131,26 @@
       "logo_url": "/plugin-assets/agentmail.ico"
     },
     {
+      "id": "snu_etl",
+      "display_name": "SNU eTL",
+      "description": "Assignments, due dates and submission status from SNU eTL (Canvas)",
+      "category": "Knowledge & Reading",
+      "logo_slug": "snu_etl",
+      "logo_color": "0F0F70",
+      "featured": false,
+      "longevity": "permanent",
+      "longevity_note": "A Canvas access token stays valid until its expiry date (if you set one) or until you delete it in eTL.",
+      "auth": {
+        "mode": "pat_paste",
+        "token_creation_url": "https://myetl.snu.ac.kr/profile/settings",
+        "token_prefix": "",
+        "validation_endpoint": "https://myetl.snu.ac.kr/api/v1/users/self",
+        "instruction_md": "1. In eTL open Account → Settings\n2. Click '+ New Access Token'\n3. Purpose: 'Dodaios', leave the expiry empty or pick a date\n4. Copy the token (shown once)\n5. Paste it below",
+        "auth_scheme": "bearer"
+      },
+      "post_install_hint_md": "Read-only: Dodaios lists your eTL assignments and whether they are submitted. Ask \"What's due on eTL?\"."
+    },
+    {
       "id": "x",
       "display_name": "X (Twitter)",
       "description": "Read posts and mentions; publish posts and replies",

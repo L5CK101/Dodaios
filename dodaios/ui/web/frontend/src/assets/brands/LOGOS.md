@@ -125,6 +125,7 @@ still supply their own logo URL. No built-in depends on the Simple Icons CDN.
 | meta | [Original mark](https://cdn.jsdelivr.net/gh/gilbarbara/logos@main/logos/meta-icon.svg) | CC0-1.0; unchanged artwork inside square viewport | 2026-09-10 |
 | figma | [Original mark](https://cdn.jsdelivr.net/gh/pheralb/svgl@main/static/library/figma.svg) | MIT; unchanged artwork inside square viewport | 2026-09-10 |
 | agentmail | [Vendor original](https://www.agentmail.to/favicon.ico) | Vendor artwork; nominative identification only | 2026-09-10 |
+| snu_etl | [Vendor original](https://etl.snu.ac.kr/favicon.ico), shipped unchanged as `snu_etl.ico` | Vendor artwork; nominative identification only | 2026-11-22 |
 
 | stripe | [Vendor original](https://images.stripeassets.com/fzn2n1nzq965/1hgcBNd12BfT9VLgbId7By/01d91920114b124fb4cf6d448f9f06eb/favicon.svg) | Vendor artwork; nominative identification only | 2026-09-10 |
 | cloudflare | [Vendor original](https://www.cloudflare.com/favicon.ico) | Vendor artwork; nominative identification only | 2026-09-10 |

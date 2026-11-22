@@ -1769,6 +1769,7 @@
     "detail_technical": "Technical details",
     "detail_tools": "Tools",
     "longevity_note": {
+      "snu_etl": "A Canvas access token stays valid until its expiry date (if you set one) or until you delete it in eTL.",
       "github": "Browser login renews automatically. Pasted tokens expire as configured at creation.",
       "discord": "OAuth tokens refresh automatically. A pasted bot token stays valid until you reset it in the Discord developer portal.",
       "telegram": "A bot token stays valid until you revoke it in BotFather.",

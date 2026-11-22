@@ -1782,6 +1782,53 @@
       }
     },
     {
+      "plugin_id": "snu_etl",
+      "result": "PASS",
+      "config_fingerprint": "35484e3aa6cfb49087d36e77e1d965e278ec4bdc1e1840e557d8a6be0bae0733",
+      "evidence": {
+        "ui": {
+          "status": "PASS",
+          "detail": "Observed on Windows in the Dodaios Dev app with one owner account: the account holder used the SNU eTL card PAT-paste connect form to paste a Canvas personal access token.",
+          "reference": "docs/marketplace/plugin-auth-audit.md#audit-matrix"
+        },
+        "browser": {
+          "status": "NOT_APPLICABLE",
+          "detail": "Canvas (SNU eTL) issues personal access tokens in the user eTL account settings; no browser OAuth flow is offered to students.",
+          "reference": "docs/marketplace/plugin-auth-audit.md#audit-matrix"
+        },
+        "callback": {
+          "status": "NOT_APPLICABLE",
+          "detail": "The personal access token flow has no browser OAuth callback; the account holder pastes the token into the SNU eTL card.",
+          "reference": "docs/marketplace/plugin-auth-audit.md#audit-matrix"
+        },
+        "connected": {
+          "status": "PASS",
+          "detail": "The personal access token was stored and the tool loaded in the Dodaios Dev app on Windows.",
+          "reference": "docs/marketplace/plugin-auth-audit.md#audit-matrix"
+        },
+        "smoke": {
+          "status": "PASS",
+          "detail": "A real read-only GET to the Canvas planner endpoint /api/v1/planner/items returned HTTP 200.",
+          "reference": "docs/marketplace/plugin-auth-audit.md#audit-matrix",
+          "real_action": true
+        },
+        "reconnect": {
+          "status": "PASS",
+          "detail": "The account holder disconnected and reconnected the SNU eTL card with the PAT-paste form; the token check GET /api/v1/users/self returned HTTP 200 and the next chat's read-only GETs to /api/v1/planner/items and /api/v1/courses returned HTTP 200.",
+          "reference": "docs/marketplace/plugin-auth-audit.md#audit-matrix"
+        },
+        "restart": {
+          "status": "PASS",
+          "detail": "The Dodaios Dev app was restarted and the stored token still worked for the same read-only GET to /api/v1/planner/items.",
+          "reference": "docs/marketplace/plugin-auth-audit.md#audit-matrix"
+        }
+      },
+      "provider_exception": {
+        "reason": "Canvas (SNU eTL) issues personal access tokens in the user eTL account settings; no browser OAuth flow is offered to students.",
+        "source": "https://canvas.instructure.com/doc/api/file.oauth.html"
+      }
+    },
+    {
       "plugin_id": "x",
       "result": "BLOCKED",
       "config_fingerprint": "3be5fed49f51d06b571dc7ce80fd64d41b84726fe7a060e3a6ebd0d7a11c0940",

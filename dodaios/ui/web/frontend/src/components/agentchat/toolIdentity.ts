@@ -102,6 +102,7 @@ const BRANDS: Record<string, Brand> = {
   nvidia: { palette: GREEN },
   amd_gpu: { palette: NEUTRAL, mark: "mono", aliases: ["amd-gpu"] },
   agentmail: { palette: NEUTRAL, aliases: ["agent-mail"] },
+  snu_etl: { palette: BLUE, aliases: ["snu-etl", "etl"] },
   groq: { palette: ["#b14628", "#ffaa8e"], mark: "mono" },
   elevenlabs: { palette: NEUTRAL, mark: "mono" },
   cartesia: { palette: GREEN },

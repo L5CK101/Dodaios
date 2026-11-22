@@ -1769,6 +1769,7 @@
     "detail_technical": "Detalles técnicos",
     "detail_tools": "Herramientas",
     "longevity_note": {
+      "snu_etl": "Un token de acceso de Canvas sigue siendo válido hasta su fecha de caducidad (si la defines) o hasta que lo elimines en eTL.",
       "github": "El inicio de sesión en el navegador se renueva automáticamente. Los tokens pegados caducan según lo configurado al crearlos.",
       "discord": "Los tokens OAuth se renuevan automáticamente. Un token de bot pegado sigue siendo válido hasta que lo restablezcas en el portal para desarrolladores de Discord.",
       "telegram": "Un token de bot sigue siendo válido hasta que lo revoques en BotFather.",
