@@ -205,6 +205,11 @@ ROUTER_TOOLS = frozenset({
     # as gmail — Vercel's catalog rest_wrapper transport produced zero MCP tools,
     # so it must be router-visible directly. Read-only; never a spawn (AP-5/AP-14).
     "vercel",
+    # SNU eTL Marketplace plugin (key ``snu_etl``): native Canvas REST tool,
+    # same rationale as gmail — no MCP server block, so it must be
+    # router-visible directly or a connected eTL is not callable by chat.
+    # Read-only (risk_tier "monitor"); never a spawn (AP-5/AP-14).
+    "etl",
     # Home Assistant Marketplace plugin (2026-07-25): native REST tool, same
     # rationale as gmail — no usable MCP surface, so it must be router-visible
     # directly or a connected smart home is not callable by voice. A direct

@@ -1850,6 +1850,10 @@ def test_router_tools_is_pure_dispatcher_set() -> None:
             # rationale as gmail — its rest_wrapper transport produced zero MCP
             # tools, so it must be router-visible directly. Read-only.
             "vercel",
+            # SNU eTL Marketplace plugin: native Canvas REST tool, same rationale
+            # as gmail — no MCP server block, so it must be router-visible
+            # directly. Read-only (risk_tier "monitor").
+            "etl",
             # Home Assistant Marketplace plugin (2026-07-25): native REST tool,
             # same rationale as gmail — Home Assistant declined dynamic client
             # registration and its MCP server only exposes its own Assist
