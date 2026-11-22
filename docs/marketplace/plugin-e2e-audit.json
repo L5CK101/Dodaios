@@ -1783,7 +1783,7 @@
     },
     {
       "plugin_id": "snu_etl",
-      "result": "BLOCKED",
+      "result": "PASS",
       "config_fingerprint": "35484e3aa6cfb49087d36e77e1d965e278ec4bdc1e1840e557d8a6be0bae0733",
       "evidence": {
         "ui": {
@@ -1813,8 +1813,8 @@
           "real_action": true
         },
         "reconnect": {
-          "status": "BLOCKED",
-          "detail": "Reconnect was not run for this owner account.",
+          "status": "PASS",
+          "detail": "The account holder disconnected and reconnected the SNU eTL card with the PAT-paste form; the token check GET /api/v1/users/self returned HTTP 200 and the next chat's read-only GETs to /api/v1/planner/items and /api/v1/courses returned HTTP 200.",
           "reference": "docs/marketplace/plugin-auth-audit.md#audit-matrix"
         },
         "restart": {
@@ -1822,12 +1822,6 @@
           "detail": "The Dodaios Dev app was restarted and the stored token still worked for the same read-only GET to /api/v1/planner/items.",
           "reference": "docs/marketplace/plugin-auth-audit.md#audit-matrix"
         }
-      },
-      "blocker": {
-        "reason": "Reconnect was not run for this owner account.",
-        "owner": "Provider account holder",
-        "next_action": "Run reconnect with the same token flow and verify again.",
-        "evidence": "The PAT-paste connection, read-only planner GET returning HTTP 200 and the same request after restart passed; reconnect was not run."
       },
       "provider_exception": {
         "reason": "Canvas (SNU eTL) issues personal access tokens in the user eTL account settings; no browser OAuth flow is offered to students.",
