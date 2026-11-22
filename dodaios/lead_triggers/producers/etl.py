@@ -15,12 +15,13 @@ from dodaios.plugins.tool.etl_canvas import (
     OVERDUE_DAYS,
     PLUGIN_ID,
     SEOUL,
+    SUMMARY_DAYS,
     EtlError,
     EtlItem,
     fetch_planner,
     format_due,
+    is_done,
     parse_items,
-    summary_text,
 )
 
 from ..event import TriggerEvent
@@ -34,6 +35,36 @@ SUMMARY_HOUR: Final[int] = 9
 
 def _parse(value: str) -> datetime:
     return datetime.fromisoformat(value)
+
+
+def _daily_summary(items: list[EtlItem], now: datetime) -> str:
+    """Keep counts and the next due items within the stored event's text limit."""
+    window_end = (now.astimezone(SEOUL) + timedelta(days=SUMMARY_DAYS)).replace(
+        hour=23, minute=59, second=59, microsecond=999999
+    )
+    soon = [item for item in items if now <= item.due_at <= window_end]
+    open_count = sum(
+        not is_done(item.status) and item.due_at >= now - timedelta(days=OVERDUE_DAYS)
+        for item in items
+    )
+    if not soon and not open_count:
+        return "Nothing due in the next 3 days, and nothing left unsubmitted."
+    prefix = f"{len(soon)} due in the next 3 days"
+    suffix = f"; {open_count} not submitted. Say 'eTL summary' for the list."
+    next_items: list[str] = []
+    for item in soon:
+        title = " ".join(item.title.split())
+        detail = f"{title}, {format_due(item.due_at)}"
+        candidate = f"{prefix} (next: {'; '.join([*next_items, detail])}){suffix}"
+        if len(candidate) > 300:
+            if not next_items:
+                available = 300 - len(f"{prefix} (next: , {format_due(item.due_at)}){suffix}")
+                next_items.append(f"{title[:available]}, {format_due(item.due_at)}")
+            break
+        next_items.append(detail)
+    if next_items:
+        prefix += f" (next: {'; '.join(next_items)})"
+    return prefix + suffix
 
 
 class EtlProducer:
@@ -57,10 +88,13 @@ class EtlProducer:
             raise ProviderError(str(exc)) from exc
         return parse_items(raw)
 
-    def _event(self, item: EtlItem, summary: str) -> TriggerEvent:
+    def _event(
+        self, item: EtlItem, summary: str, *, change_stamp: str | None = None
+    ) -> TriggerEvent:
+        key = f"{item.id}@{change_stamp}" if change_stamp is not None else item.id
         return TriggerEvent(
-            source=self.source, scope=item.course, thread_key=item.id,
-            summary=summary, raw_ref=item.url, ids=(item.id,),
+            source=self.source, scope=item.course, thread_key=key,
+            summary=summary, raw_ref=item.url, ids=(key,),
         )
 
     async def poll(self, cursor: dict[str, Any], now: float) -> Poll:
@@ -72,7 +106,16 @@ class EtlProducer:
         summary_day = str(cursor.get("summary_day") or "")
         items = await self._items(now_dt)
 
+        if known and not items:
+            return Poll(events=[], cursor=cursor, min_interval_s=POLL_INTERVAL_S)
+
+        new_items = [item for item in items if item.id not in known]
         events: list[TriggerEvent] = []
+        if not first and len(new_items) > 5:
+            events.append(TriggerEvent(
+                source=self.source, scope="eTL", thread_key=f"new:{now}",
+                summary=f"{len(new_items)} new items on eTL",
+            ))
         due: dict[str, str] = {}
         for item in items:
             stamp = item.due_at.isoformat()
@@ -80,23 +123,24 @@ class EtlProducer:
             if first:
                 continue
             before = known.get(item.id)
-            if before is None:
+            if before is None and len(new_items) <= 5:
                 events.append(self._event(
                     item,
                     f"New on eTL: {item.course} — {item.title}, due {format_due(item.due_at)}",
                 ))
-            elif before != stamp:
+            elif before is not None and before != stamp:
                 events.append(self._event(
                     item,
                     f"Due date changed: {item.course} — {item.title}: "
                     f"{format_due(_parse(before))} → {format_due(item.due_at)}",
+                    change_stamp=stamp,
                 ))
 
         if local.hour >= SUMMARY_HOUR and summary_day != today:
             if not first:
                 events.append(TriggerEvent(
                     source=self.source, scope="eTL", thread_key=f"summary:{today}",
-                    summary=summary_text(items, now_dt),
+                    summary=_daily_summary(items, now_dt),
                 ))
             summary_day = today
 

@@ -167,8 +167,9 @@ async def fetch_planner(get: Getter, start: datetime, end: datetime) -> list[dic
         if response.status_code != 200:
             raise EtlError(f"eTL: HTTP {response.status_code}")
         page = response.json()
-        if isinstance(page, list):
-            out.extend(e for e in page if isinstance(e, dict))
+        if not isinstance(page, list):
+            raise EtlError("eTL: planner page must be a JSON list")
+        out.extend(e for e in page if isinstance(e, dict))
         url = (response.links.get("next") or {}).get("url")
         params = None
     return out

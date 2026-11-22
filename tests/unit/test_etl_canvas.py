@@ -180,3 +180,13 @@ async def test_fetch_planner_error_hides_auth() -> None:
         )
     assert "500" in str(exc.value)
     assert "secret-tok" not in str(exc.value)
+
+
+async def test_fetch_planner_rejects_a_non_list_page() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"errors": [{"message": "unexpected"}]})
+
+    with pytest.raises(EtlError):
+        await fetch_planner(
+            _getter(handler), datetime(2026, 11, 8, tzinfo=UTC), datetime(2026, 11, 30, tzinfo=UTC)
+        )

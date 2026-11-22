@@ -11,8 +11,9 @@ from typing import Any
 import httpx
 import pytest
 
-from dodaios.lead_triggers import TriggerSettings
+from dodaios.lead_triggers import SourceRule, TriggerEvent, TriggerSettings
 from dodaios.lead_triggers.event import SOURCES
+from dodaios.lead_triggers.filter import Stage1
 from dodaios.lead_triggers.producers.base import ProviderError
 from dodaios.lead_triggers.producers.etl import EtlProducer
 from dodaios.lead_triggers.settings import PRODUCERS
@@ -64,7 +65,9 @@ async def test_due_date_change_emits_one_event() -> None:
     assert len(poll.events) == 1
     event = poll.events[0]
     assert event.source == "etl" and event.scope == "Algorithms"
-    assert event.thread_key == "assignment:1"
+    # The change stamp keeps a second move of the same deadline from being
+    # dropped by the intake's thread cooldown.
+    assert event.thread_key == "assignment:1@2026-11-26T14:59:59+00:00"
     assert event.summary.startswith("Due date changed: Algorithms — HW3:")
     assert "Tue 11/24 23:59 → Thu 11/26 23:59" in event.summary
     assert event.raw_ref == "https://myetl.snu.ac.kr/courses/1/assignments/1"
@@ -139,3 +142,52 @@ def test_etl_is_a_known_source_and_producer() -> None:
     assert TriggerSettings().producer_enabled("snu_etl")
     producer = EtlProducer(Fake().api("snu_etl"))
     assert producer.id == "snu_etl" and producer.source == "etl"
+
+
+# --------------------------------------------------------------- final-review fixes
+
+
+async def test_new_then_changed_then_changed_again_all_pass_the_intake() -> None:
+    settings = TriggerSettings(sources={"etl": SourceRule(mode="candidate")})
+    stage = Stage1(clock=lambda: NOW_9)
+    cursor: dict[str, Any] = {"due": {}, "summary_day": TODAY}
+    verdicts = []
+    for due in ("2026-11-24T14:59:59Z", "2026-11-26T14:59:59Z", "2026-11-27T14:59:59Z"):
+        poll = await _producer([planner_item(1, due=due)]).poll(cursor, NOW_9)
+        cursor = poll.cursor
+        verdicts += [stage.verdict(e, settings) for e in poll.events]
+    assert verdicts == ["candidate", "candidate", "candidate"]
+
+
+async def test_daily_summary_is_one_short_line_that_survives_storage() -> None:
+    cursor = {"due": {}, "summary_day": YESTERDAY}
+    items = [
+        planner_item(i, title=f"Homework number {i}", due="2026-11-24T14:59:59Z")
+        for i in range(1, 12)
+    ]
+    poll = await _producer(items).poll(cursor, NOW_9)
+    (summary,) = _summaries(poll.events)
+    assert len(summary.summary) <= 300 and "\n" not in summary.summary
+    assert TriggerEvent.from_dict(summary.to_dict()).summary == summary.summary
+    assert "11 due in the next 3 days" in summary.summary
+    assert "Homework number 1" in summary.summary
+    assert "eTL summary" in summary.summary
+
+
+async def test_empty_reply_after_known_items_is_skipped() -> None:
+    cursor = {"due": {"assignment:1": "2026-11-24T14:59:59+00:00"}, "summary_day": TODAY}
+    empty = await _producer([]).poll(cursor, NOW_9)
+    assert empty.events == []
+    assert empty.cursor["due"] == cursor["due"]
+    back = await _producer([planner_item(1)]).poll(empty.cursor, NOW_9 + 1800)
+    assert back.events == []
+
+
+async def test_many_new_items_fold_into_one_event() -> None:
+    cursor = {"due": {"assignment:1": "2026-11-24T14:59:59+00:00"}, "summary_day": TODAY}
+    items = [planner_item(1)] + [planner_item(i, title=f"W{i}") for i in range(2, 9)]
+    poll = await _producer(items).poll(cursor, NOW_9)
+    assert len(poll.events) == 1
+    assert poll.events[0].summary.startswith("7 new items on eTL")
+    assert len(poll.events[0].summary) <= 300
+    assert len(poll.cursor["due"]) == 8
