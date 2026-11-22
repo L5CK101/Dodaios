@@ -1769,6 +1769,7 @@
     "detail_technical": "技术详情",
     "detail_tools": "工具",
     "longevity_note": {
+      "snu_etl": "Canvas 访问令牌在到期日（如果你设置了）之前或在你于 eTL 中删除它之前一直有效。",
       "github": "浏览器登录会自动续期。粘贴的令牌按创建时的设置过期。",
       "discord": "OAuth 令牌会自动刷新。粘贴的机器人令牌在你于 Discord 开发者门户中重置之前一直有效。",
       "telegram": "机器人令牌在你于 BotFather 中撤销之前一直有效。",

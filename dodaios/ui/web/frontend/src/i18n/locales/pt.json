@@ -1769,6 +1769,7 @@
     "detail_technical": "Detalhes técnicos",
     "detail_tools": "Ferramentas",
     "longevity_note": {
+      "snu_etl": "Um token de acesso do Canvas continua válido até a data de expiração (se você definir uma) ou até você excluí-lo no eTL.",
       "github": "O início de sessão no browser renova-se automaticamente. Os tokens colados expiram conforme configurado na criação.",
       "discord": "Os tokens OAuth renovam-se automaticamente. Um token de bot colado continua válido até o repores no portal de programadores do Discord.",
       "telegram": "Um token de bot continua válido até o revogares no BotFather.",

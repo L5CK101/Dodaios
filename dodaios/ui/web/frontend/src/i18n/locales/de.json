@@ -1769,6 +1769,7 @@
     "detail_technical": "Technische Details",
     "detail_tools": "Tools",
     "longevity_note": {
+      "snu_etl": "Ein Canvas-Zugriffstoken bleibt gültig bis zu seinem Ablaufdatum (falls du eines festlegst) oder bis du es in eTL löschst.",
       "github": "Die Browser-Anmeldung erneuert sich automatisch. Eingefügte Tokens laufen ab wie beim Erstellen festgelegt.",
       "discord": "OAuth-Tokens erneuern sich automatisch. Ein eingefügtes Bot-Token bleibt gültig, bis du es im Discord-Entwicklerportal zurücksetzt.",
       "telegram": "Ein Bot-Token bleibt gültig, bis du es in BotFather widerrufst.",
