@@ -11,6 +11,7 @@ submits work or changes anything in eTL.
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
 from typing import Any
@@ -32,6 +33,8 @@ from .etl_canvas import (
     parse_items,
     summary_text,
 )
+
+log = logging.getLogger(__name__)
 
 _NOT_CONNECTED = "SNU eTL is not connected — connect it in the Plugins view."
 _REJECTED = "SNU eTL rejected the token — reconnect SNU eTL in the Plugins view."
@@ -174,10 +177,13 @@ class EtlCanvasTool:
         try:
             out = await self._run(action, args, headers)
         except _Rejected:
+            log.warning("eTL: skipped tool action because the token was rejected")
             return ToolResult(success=False, output=None, error=_REJECTED)
         except EtlError as exc:
+            log.warning("eTL: skipped tool action because the response was not a readable page")
             return ToolResult(success=False, output=None, error=str(exc))
         except httpx.HTTPError as exc:
+            log.warning("eTL: skipped tool action because the HTTP request failed")
             error = f"eTL is unreachable ({type(exc).__name__})"
             return ToolResult(success=False, output=None, error=error)
         return ToolResult(success=True, output=out)

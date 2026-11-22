@@ -9,6 +9,7 @@ never appears in a return value or an exception message.
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
@@ -16,6 +17,8 @@ from typing import Any, Final
 from zoneinfo import ZoneInfo
 
 import httpx
+
+log = logging.getLogger(__name__)
 
 __all__ = [
     "BASE_URL",
@@ -96,6 +99,7 @@ def parse_items(raw: list[dict[str, Any]]) -> list[EtlItem]:
         try:
             due_at = _parse_time(str(due))
         except ValueError:
+            log.warning("eTL: skipped planner item with an invalid due date")
             continue
         plannable = entry.get("plannable") if isinstance(entry.get("plannable"), dict) else {}
         items.append(
